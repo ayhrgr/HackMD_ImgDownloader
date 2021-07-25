@@ -19,8 +19,12 @@ namespace HackMD_ImgDownloader
 
             FileInfo fileAssembly = new FileInfo(assemblyPath);
 
-            string hackMD_Path = Path.Combine(fileAssembly.DirectoryName, @"markdown");
-            string img_Path = Path.Combine(fileAssembly.DirectoryName, @"img");
+            string dirAssembly = fileAssembly.DirectoryName;
+
+            //dirAssembly = @"D:\Samples\hackmd";
+
+            string hackMD_Path = Path.Combine(dirAssembly, @"markdown");
+            string img_Path = Path.Combine(dirAssembly, @"img");
 
             DirectoryInfo dirinfo = new DirectoryInfo(hackMD_Path);
             if (dirinfo.Exists == false)
@@ -52,9 +56,19 @@ namespace HackMD_ImgDownloader
                         //Console.WriteLine(markdown);
                         //Console.WriteLine("========================================================");
 
-                        List<string> lst = RegexUtil.RegexMatches(markdown, RegexUtil.RegPattern_Tag(@"\(\s*", @"\s*\)"));
+                        // ![image alt](https://i.imgur.com/hWZxhNc.png "タイトル" =100x100)
+                        List<string> lst = RegexUtil.RegexMatches(
+                            markdown, 
+                            RegexUtil.RegPattern_Tag(
+                                @"\(\s*",
+                                @"\s*\)"
+                                )
+                            );
+
                         // 先頭がhttpsで始まるものを抽出する。
                         lst = lst
+                            .Select(n => RegexUtil.Replace(n, @"\s*=[0-9]+x[0-9]+\s*", ""))
+                            .Select(n => RegexUtil.Replace(n, @"\s*""[^""]*""\s*", ""))
                             .Where(n =>
                                    n.ToLower().StartsWith(@"http://")
                                 || n.ToLower().StartsWith(@"https://")

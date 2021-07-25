@@ -95,5 +95,17 @@ namespace HackMD_ImgDownloader
             return sbr.ToString();
         }
 
+        public static string Replace(
+            string input,
+            string pattern,
+            string replacement,
+            RegexOptions options = RegexOptions.IgnoreCase | RegexOptions.Singleline
+            )
+        {
+            Regex reg = new Regex(pattern, options);
+            string result = reg.Replace(input, replacement);
+            return result;
+        }
+
     }
 }
