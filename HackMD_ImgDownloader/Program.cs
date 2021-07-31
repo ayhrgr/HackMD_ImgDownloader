@@ -21,7 +21,7 @@ namespace HackMD_ImgDownloader
 
             string dirAssembly = fileAssembly.DirectoryName;
 
-            //dirAssembly = @"D:\Samples\hackmd";
+            dirAssembly = @"D:\Samples\hackmd";
 
             string hackMD_Path = Path.Combine(dirAssembly, @"markdown");
             string img_Path = Path.Combine(dirAssembly, @"img");
@@ -38,7 +38,7 @@ namespace HackMD_ImgDownloader
                 throw new Exception("don't exists hackDM images directory.");
             }
 
-            List<string> lstImgUrl = new List<string>();
+            List<ImageUrlData> lstImgUrl = new List<ImageUrlData>();
 
             int count_md = 0;
             foreach (FileInfo fileInfo in dirinfo.EnumerateFiles())
@@ -83,26 +83,41 @@ namespace HackMD_ImgDownloader
                                 ) == true
                                 )
                             .ToList();
-                        lstImgUrl.AddRange(lst);
+                        lstImgUrl.AddRange(lst.Select(n => new ImageUrlData(n, fileInfo.FullName)));
                     }
                 }
             }
 
+            List<ImageUrlData> errorImageUrl = new List<ImageUrlData>();
             using (HttpClientManager http = new HttpClientManager())
             {
                 HttpClient client = http.GetClient();
 
-                foreach (string url in lstImgUrl)
+                int intCount = 0;
+                foreach (ImageUrlData datUrl in lstImgUrl)
                 {
+                    intCount++;
+
+                    string url = datUrl.StrImageUrl;
+
                     string name = HTTPUtil.GetNameFromURL(url);
                     string path = HTTPUtil.GetUrlExcludeName(url);
 
                     path = path.Replace("/", "^");
                     path = path.Replace(":", "-");
 
-                    Console.WriteLine("[" + url + "][" + path + "][" + name + "]");
+                    Console.WriteLine("[" + url + "][" + path + "][" + name + "] " + intCount + "/" + lstImgUrl.Count);
 
-                    List<FileInfo> files = HTTPUtil.Download(client, url, name);
+                    List<FileInfo> files = new List<FileInfo>();
+                    try
+                    {
+                        files = HTTPUtil.Download(client, url, name);
+                    }
+                    catch
+                    {
+                        errorImageUrl.Add(datUrl);
+                    }
+
                     if (files != null)
                     {
                         DirectoryInfo dir = new DirectoryInfo(Path.Combine(dirImg.FullName, path));
@@ -124,8 +139,17 @@ namespace HackMD_ImgDownloader
                 }
             }
 
+            Console.WriteLine("===================================================");
             Console.WriteLine(count_md + " 個のMarkdown");
             Console.WriteLine(lstImgUrl.Count + " 個の画像");
+            Console.WriteLine(errorImageUrl.Count + " 件のエラー");
+            Console.WriteLine("===================================================");
+            Console.WriteLine("ダウンロード出来なかった画像");
+            foreach (ImageUrlData datUrl in errorImageUrl)
+            {
+                Console.WriteLine("[" + datUrl.StrMarkDownPath + "][" + datUrl.StrImageUrl + "]");
+            }
+
         }
     }
 }
