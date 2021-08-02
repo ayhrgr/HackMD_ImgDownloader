@@ -21,7 +21,7 @@ namespace HackMD_ImgDownloader
 
             string dirAssembly = fileAssembly.DirectoryName;
 
-            dirAssembly = @"D:\Samples\hackmd";
+            //dirAssembly = @"D:\Samples\hackmd";
 
             string hackMD_Path = Path.Combine(dirAssembly, @"markdown");
             string img_Path = Path.Combine(dirAssembly, @"img");
