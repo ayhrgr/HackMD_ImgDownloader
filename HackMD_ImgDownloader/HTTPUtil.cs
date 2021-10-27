@@ -113,7 +113,7 @@ namespace HackMD_ImgDownloader
                                     )
                                 );
                             // zipファイルなので、解凍する。
-                            //ATCMDotNetZipUtil.ExtractZip(
+                            //DotNetZipUtil.ExtractZip(
                             //    fileZip_Temp.FullName,
                             //    dirUnzip.FullName
                             //    );

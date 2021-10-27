@@ -150,6 +150,11 @@ namespace HackMD_ImgDownloader
                 Console.WriteLine("[" + datUrl.StrMarkDownPath + "][" + datUrl.StrImageUrl + "]");
             }
 
+            if (errorImageUrl.Any())
+            {
+                Console.WriteLine("エラーが発生しました！！");
+                Console.ReadLine();
+            }
         }
     }
 }
